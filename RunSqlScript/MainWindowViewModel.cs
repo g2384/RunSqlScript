@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace RunSqlScript
 {
@@ -71,8 +72,23 @@ namespace RunSqlScript
 
         private bool CanExecuteMethod()
         {
-            return true;
-            //return Files.Any();
+            return Files.Any();
+        }
+
+        private bool _isProgressVisible;
+
+        public bool IsProgressVisible
+        {
+            get => _isProgressVisible;
+            set => SetProperty(ref _isProgressVisible, value);
+        }
+
+        private TaskViewModel _taskViewModel;
+
+        public TaskViewModel TaskViewModel
+        {
+            get => _taskViewModel;
+            set => SetProperty(ref _taskViewModel, value);
         }
 
         public void RunCommand()
@@ -85,6 +101,9 @@ namespace RunSqlScript
                 var script = File.ReadAllText(file);
                 server.ConnectionContext.ExecuteNonQuery(script);
             }
+            var taskManager = new RunSqlScriptTask();
+            TaskViewModel = new TaskViewModel(taskManager, GetDispatcher());
+            
 
             MessageBox.Show("Finished", "Message", MessageBoxButton.OK);
         }
@@ -106,6 +125,75 @@ namespace RunSqlScript
                 selectedKey = nextIndex >= 0 ? collection[nextIndex] : default(T);
                 RaisePropertyChanged(selectedKeyName);
             }
+        }
+
+        private static Dispatcher GetDispatcher()
+        {
+            var app = Application.Current;
+            return app?.Dispatcher;
+        }
+    }
+
+    public sealed class RunSqlScriptTask : Task
+    {
+        public override void Execute()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public abstract class Task
+    {
+        public abstract void Execute();
+
+        public event EventHandler StateChanged;
+
+        public void Cancel()
+        {
+
+        }
+    }
+
+    public sealed class TaskViewModel : BindableBase
+    {
+        private readonly Task _task;
+        private readonly Dispatcher _dispatcher;
+
+        public TaskViewModel(Task task, Dispatcher dispatcher)
+        {
+            _dispatcher = dispatcher;
+            _task = task;
+            CancelCommand = new DelegateCommand(Cancel);
+            _task.StateChanged += Submission_StateChanged;
+        }
+
+        private string _status;
+
+        public string Status
+        {
+            get => _status;
+            set => SetProperty(ref _status, value);
+        }
+
+        private double _progress;
+
+        public double Progress
+        {
+            get => _progress;
+            set => SetProperty(ref _progress, value);
+        }
+
+        public DelegateCommand CancelCommand { get; }
+
+        private void Cancel()
+        {
+            _task.Cancel();
+            Status = "Canceling";
+        }
+
+        private void Submission_StateChanged(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

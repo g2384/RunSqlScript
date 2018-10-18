@@ -8,10 +8,17 @@
         d:DataContext="{d:DesignInstance Type={x:Type local:MainWindowViewModel}, IsDesignTimeCreatable=False}"
         mc:Ignorable="d"
         Title="Run SQL script" MinHeight="300" Height="300" MinWidth="600" Width="600">
+    <Window.Resources>
+        <ResourceDictionary>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+        </ResourceDictionary>
+    </Window.Resources>
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -90,5 +97,12 @@
             Width="50"
             Content="Run"
             Command="{Binding Run}"/>
+        <local:TaskView
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,5,0,0"
+            DataContext="{Binding TaskViewModel}"
+            Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.IsProgressVisible, Converter={StaticResource BooleanToVisibility}}"/>
     </Grid>
 </Window>
