@@ -6,11 +6,12 @@ using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace RunSqlScript
@@ -23,9 +24,19 @@ namespace RunSqlScript
         {
             LoadSettings();
             Files = new ObservableCollection<string>(_settings.Files);
-            ScriptsDropHandler = new FileDropHandler(Files);
+            ScriptsDropHandler = new FileDropHandler(Files, collection_CollectionChanged);
             DeleteFile = new DelegateCommand(() => DeleteSelectedItem(Files, ref _selectedFile, nameof(SelectedFile)));
-            Run = new DelegateCommand(RunCommand, CanExecuteMethod);
+            Run = new DelegateCommand(() => RunAsyncTask(RunCommand), CanExecuteMethod);
+        }
+
+        private async void RunAsyncTask(Action action)
+        {
+            await Task.Run(action);
+        }
+
+        private void collection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Run.RaiseCanExecuteChanged();
         }
 
         private void LoadSettings()
@@ -66,13 +77,15 @@ namespace RunSqlScript
             set => SetProperty(ref _connectionString, value);
         }
 
-        public ICommand DeleteFile { get; }
+        public DelegateCommand DeleteFile { get; }
 
-        public ICommand Run { get; }
+        public DelegateCommand Run { get; }
+
+        private bool _hasRunningTasks;
 
         private bool CanExecuteMethod()
         {
-            return Files.Any();
+            return !_hasRunningTasks && Files.Any();
         }
 
         private bool _isProgressVisible;
@@ -93,19 +106,33 @@ namespace RunSqlScript
 
         public void RunCommand()
         {
-            SaveSettings();
-            var sqlConnection = new SqlConnection(ConnectionString);
-            var server = new Server(new ServerConnection(sqlConnection));
-            foreach (var file in Files)
+            IsProgressVisible = true;
+            ChangeIsExecutingTasks(true);
+            try
             {
-                var script = File.ReadAllText(file);
-                server.ConnectionContext.ExecuteNonQuery(script);
+                SaveSettings();
+                var task = new RunSqlScriptJob(_settings.ConnectionString, _settings.Files);
+                TaskViewModel = new TaskViewModel(task, GetDispatcher());
+                task.Execute();
             }
-            var taskManager = new RunSqlScriptTask();
-            TaskViewModel = new TaskViewModel(taskManager, GetDispatcher());
-            
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK);
+            }
+            finally
+            {
+                ChangeIsExecutingTasks(false);
+            }
+        }
 
-            MessageBox.Show("Finished", "Message", MessageBoxButton.OK);
+        private void ChangeIsExecutingTasks(bool hasRunningTasks)
+        {
+            var dispatcher = GetDispatcher();
+            dispatcher?.Invoke(() =>
+            {
+                _hasRunningTasks = hasRunningTasks;
+                Run.RaiseCanExecuteChanged();
+            }, DispatcherPriority.Send);
         }
 
         private void SaveSettings()
@@ -134,17 +161,77 @@ namespace RunSqlScript
         }
     }
 
-    public sealed class RunSqlScriptTask : Task
+    public sealed class RunSqlScriptJob : Job
     {
-        public override void Execute()
+        private readonly string _connectionString;
+        private readonly string[] _files;
+
+        public RunSqlScriptJob(string connectionString, string[] files)
         {
-            throw new NotImplementedException();
+            _connectionString = connectionString;
+            _files = files;
+        }
+
+        protected override double GetTotalTasks()
+        {
+            return _files.Length + 1;
+        }
+
+        protected override void ExecuteTasks()
+        {
+            RaiseStateChanged("Connecting to sql server");
+            var sqlConnection = new SqlConnection(_connectionString);
+            var server = new Server(new ServerConnection(sqlConnection));
+            foreach (var file in _files)
+            {
+                RaiseStateChanged("Executing " + Path.GetFileName(file));
+                var script = File.ReadAllText(file);
+                server.ConnectionContext.ExecuteNonQuery(script);
+            }
+            RaiseStateChanged("Completed");
         }
     }
 
-    public abstract class Task
+    public abstract class Job
     {
-        public abstract void Execute();
+        public void Execute()
+        {
+            try
+            {
+                RaiseStateChanged("Initialising", 0);
+                _totalTasks = GetTotalTasks();
+                ExecuteTasks();
+            }
+            catch (Exception e)
+            {
+                RaiseStateChanged(e.Message);
+            }
+        }
+
+        private double _totalTasks;
+
+        protected abstract void ExecuteTasks();
+
+        public string Description { get; set; }
+
+        public double Progress { get; set; }
+
+        protected abstract double GetTotalTasks();
+
+        private int _processedTasks;
+
+        public void RaiseStateChanged(string description)
+        {
+            _processedTasks++;
+            RaiseStateChanged(description, _processedTasks);
+        }
+
+        private void RaiseStateChanged(string description, int processedTasks)
+        {
+            Description = description;
+            Progress = processedTasks / _totalTasks * 100;
+            StateChanged(this, null);
+        }
 
         public event EventHandler StateChanged;
 
@@ -156,15 +243,15 @@ namespace RunSqlScript
 
     public sealed class TaskViewModel : BindableBase
     {
-        private readonly Task _task;
+        private readonly Job _job;
         private readonly Dispatcher _dispatcher;
 
-        public TaskViewModel(Task task, Dispatcher dispatcher)
+        public TaskViewModel(Job job, Dispatcher dispatcher)
         {
             _dispatcher = dispatcher;
-            _task = task;
+            _job = job;
             CancelCommand = new DelegateCommand(Cancel);
-            _task.StateChanged += Submission_StateChanged;
+            _job.StateChanged += Job_StateChanged;
         }
 
         private string _status;
@@ -187,13 +274,14 @@ namespace RunSqlScript
 
         private void Cancel()
         {
-            _task.Cancel();
+            _job.Cancel();
             Status = "Canceling";
         }
 
-        private void Submission_StateChanged(object sender, EventArgs e)
+        private void Job_StateChanged(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            Status = _job.Description;
+            Progress = _job.Progress;
         }
     }
 }

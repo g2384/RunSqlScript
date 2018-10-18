@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type={x:Type local:TaskViewModel}, IsDesignTimeCreatable=False}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid Height="20">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -29,10 +29,9 @@
             Command="{Binding CancelCommand}"
             BorderBrush="Transparent"
             Background="Transparent"
-            Margin="15,0,0,0">
-            <StackPanel>
-                <Image Source="cancel.png" Width="15" Height="15"/>
-            </StackPanel>
+            Margin="5,0,0,0" VerticalAlignment="Center"
+            Style="{DynamicResource MetroCircleButtonStyle}">
+            <Image Source="cancel.png"/>
         </Button>
         <TextBlock
             Grid.Column="1"

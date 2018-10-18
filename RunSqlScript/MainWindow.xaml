@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:RunSqlScript"
         d:DataContext="{d:DesignInstance Type={x:Type local:MainWindowViewModel}, IsDesignTimeCreatable=False}"
         mc:Ignorable="d"
@@ -11,6 +12,10 @@
     <Window.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+            <Style TargetType="{x:Type Button}" 
+                       BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="controls:ButtonHelper.PreserveTextCase" Value="True"/>
+            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -77,6 +82,7 @@
             </Border.Style>
             <ListBox
                 dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.IsDragSource="True"
                 dd:DragDrop.UseDefaultDragAdorner="True"
                 dd:DragDrop.UseDefaultEffectDataTemplate="True"
                 dd:DragDrop.DropHandler="{Binding ScriptsDropHandler}"
