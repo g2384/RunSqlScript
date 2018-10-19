@@ -21,7 +21,7 @@ namespace RunSqlScript
         {
             LoadSettings();
             Files = new ObservableCollection<string>(_settings.Files);
-            ScriptsDropHandler = new FileDropHandler(Files, collection_CollectionChanged);
+            ScriptsDropHandler = new FileDropHandler(Files, () => UseRelativePath, collection_CollectionChanged);
             DeleteFile = new DelegateCommand(() => DeleteSelectedItem(Files, ref _selectedFile, nameof(SelectedFile)));
             Run = new DelegateCommand(() => RunAsyncTask(RunCommand), CanExecuteMethod);
         }
@@ -50,6 +50,39 @@ namespace RunSqlScript
             }
 
             _connectionString = _settings.ConnectionString;
+            _useRelativePath = _settings.UseRelativePath;
+        }
+
+        private bool _useRelativePath;
+
+        public bool UseRelativePath
+        {
+            get => _useRelativePath;
+            set
+            {
+                if (SetProperty(ref _useRelativePath, value))
+                {
+                    ChangeFilePaths();
+                }
+            }
+        }
+
+        private void ChangeFilePaths()
+        {
+            if (UseRelativePath)
+            {
+                for (var i = 0; i < Files.Count; i++)
+                {
+                    Files[i] = FilePathHelper.GetRelativePath(Files[i]);
+                }
+            }
+            else
+            {
+                for (var i = 0; i < Files.Count; i++)
+                {
+                    Files[i] = FilePathHelper.GetAbsolutePath(Files[i]);
+                }
+            }
         }
 
         private Settings _settings;
@@ -136,6 +169,7 @@ namespace RunSqlScript
         {
             _settings.Files = Files.ToArray();
             _settings.ConnectionString = ConnectionString;
+            _settings.UseRelativePath = UseRelativePath;
             File.WriteAllText(SettingFile, JsonConvert.SerializeObject(_settings, Formatting.Indented));
         }
 

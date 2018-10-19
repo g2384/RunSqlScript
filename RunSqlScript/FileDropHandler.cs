@@ -10,10 +10,12 @@ namespace RunSqlScript
     public class FileDropHandler : IDropTarget
     {
         private readonly ObservableCollection<string> _collection;
+        private readonly Func<bool> _useRelativePath;
 
-        public FileDropHandler(ObservableCollection<string> collection, NotifyCollectionChangedEventHandler collectionChanged)
+        public FileDropHandler(ObservableCollection<string> collection, Func<bool> useRelativePath, NotifyCollectionChangedEventHandler collectionChanged)
         {
             _collection = collection;
+            _useRelativePath = useRelativePath;
             _collection.CollectionChanged += collectionChanged;
         }
 
@@ -41,8 +43,18 @@ namespace RunSqlScript
         public void Drop(IDropInfo dropInfo)
         {
             var files = SetDropEffects(dropInfo);
+            if (!files.Any())
+            {
+                return;
+            }
+
+            if (_useRelativePath())
+            {
+                files = FilePathHelper.GetRelativePaths(files);
+            }
+
             var insertIndex = dropInfo.InsertIndex;
-            
+
             switch (dropInfo.Effects)
             {
                 case DragDropEffects.None:

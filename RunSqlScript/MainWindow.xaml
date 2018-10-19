@@ -22,81 +22,89 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <GroupBox
+        <Label
             Grid.Row="0"
-            Grid.Column="0"
-            Header="Connection String">
-            <TextBox
-                MinLines="5"
-                AcceptsReturn="True"
-                TextWrapping="Wrap"
-                MaxLines="5"
-                VerticalScrollBarVisibility="Auto"
-                Text="{Binding ConnectionString}"/>
-        </GroupBox>
-
-        <GroupBox
+            Content="Connection String:">
+        </Label>
+        <TextBox
             Grid.Row="1"
-            Margin="0,5,0,0"
-            Header="Scripts">
-            <Border
-                BorderThickness="1">
-                <Border.Resources>
-                    <Color x:Key="BlackColor">#FF000000</Color>
-                    <Color x:Key="Gray2">#FF7F7F7F</Color>
-                    <Color x:Key="Gray6">#FFCCCCCC</Color>
-                    <SolidColorBrush x:Key="TextBoxBorderBrush" Color="{StaticResource Gray6}" />
-                    <SolidColorBrush x:Key="TextBoxMouseOverBorderBrush" Color="{StaticResource Gray2}" />
-                    <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource BlackColor}" />
-                </Border.Resources>
-                <Border.Style>
-                    <Style TargetType="{x:Type Border}">
-                        <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderBrush}" />
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" Value="{StaticResource TextBoxMouseOverBorderBrush}" />
-                            </Trigger>
-                            <EventTrigger RoutedEvent="Control.GotFocus">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="White" Duration="0:0:0.250"/>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <ListBox
-                    dd:DragDrop.IsDropTarget="True"
-                    dd:DragDrop.IsDragSource="True"
-                    dd:DragDrop.UseDefaultDragAdorner="True"
-                    dd:DragDrop.UseDefaultEffectDataTemplate="True"
-                    dd:DragDrop.DropHandler="{Binding ScriptsDropHandler}"
-                    AllowDrop="True"
-                    ItemsSource="{Binding Files}"
-                    SelectedItem="{Binding SelectedFile}"
-                    SelectionMode="Single">
-                    <ListBox.InputBindings>
-                        <KeyBinding Key="Delete" Command="{Binding DeleteFile}"/>
-                    </ListBox.InputBindings>
-                </ListBox>
-            </Border>
-        </GroupBox>
-        <Button
+            MinLines="5"
+            AcceptsReturn="True"
+            TextWrapping="Wrap"
+            MaxLines="5"
+            VerticalScrollBarVisibility="Auto"
+            Text="{Binding ConnectionString}"/>
+        <Label
             Grid.Row="2"
+            Margin="0,5,0,0"
+            Content="Scripts:">
+        </Label>
+        <Border
+            Grid.Row="3"
+            BorderThickness="1">
+            <Border.Resources>
+                <Color x:Key="BlackColor">#FF000000</Color>
+                <Color x:Key="Gray2">#FF7F7F7F</Color>
+                <Color x:Key="Gray6">#FFCCCCCC</Color>
+                <SolidColorBrush x:Key="TextBoxBorderBrush" Color="{StaticResource Gray6}" />
+                <SolidColorBrush x:Key="TextBoxMouseOverBorderBrush" Color="{StaticResource Gray2}" />
+                <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource BlackColor}" />
+            </Border.Resources>
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderBrush}" />
+                    <Style.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{StaticResource TextBoxMouseOverBorderBrush}" />
+                        </Trigger>
+                        <EventTrigger RoutedEvent="Control.GotFocus">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="BorderBrush.Color" To="White" Duration="0:0:0.250"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <ListBox
+                dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.UseDefaultDragAdorner="True"
+                dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                dd:DragDrop.DropHandler="{Binding ScriptsDropHandler}"
+                AllowDrop="True"
+                ItemsSource="{Binding Files}"
+                SelectedItem="{Binding SelectedFile}"
+                SelectionMode="Single">
+                <ListBox.InputBindings>
+                    <KeyBinding Key="Delete" Command="{Binding DeleteFile}"/>
+                </ListBox.InputBindings>
+            </ListBox>
+        </Border>
+        <CheckBox
+            Grid.Row="4"
+            HorizontalAlignment="Left"
+            Margin="0,5,0,0"
+            Content="Use relative path"
+            IsChecked="{Binding UseRelativePath}"/>
+        <Button
+            Grid.Row="4"
             HorizontalAlignment="Right"
             Margin="0,5,0,0"
             Width="50"
             Content="Run"
             Command="{Binding Run}"/>
         <local:TaskView
-            Grid.Row="3"
+            Grid.Row="5"
             Margin="0,5,0,0"
             DataContext="{Binding TaskViewModel}"
-            Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.IsProgressVisible, Converter={StaticResource BooleanToVisibility}}"/>
+            Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Path=DataContext.IsTaskBarVisible, Converter={StaticResource BooleanToVisibility}}"/>
     </Grid>
 </controls:MetroWindow>
