@@ -30,7 +30,13 @@ namespace RunSqlScript
 
         private int _processedTasks;
 
-        public JobStatus Status { get; set; }
+        public JobStatus Status { get; private set; }
+        
+        protected void Completed()
+        {
+            Status = JobStatus.Completed;
+            RaiseStateChanged("Completed");
+        }
 
         public void RaiseStateChanged(string description)
         {

@@ -40,7 +40,7 @@ namespace RunSqlScript
                 var script = File.ReadAllText(file);
                 server.ConnectionContext.ExecuteNonQuery(script);
             }
-            RaiseStateChanged("Completed");
+            Completed();
         }
     }
 }
