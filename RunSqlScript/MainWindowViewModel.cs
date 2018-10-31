@@ -170,7 +170,15 @@ namespace RunSqlScript
             _settings.Files = Files.ToArray();
             _settings.ConnectionString = ConnectionString;
             _settings.UseRelativePath = UseRelativePath;
-            File.WriteAllText(SettingFile, JsonConvert.SerializeObject(_settings, Formatting.Indented));
+            var serialized = JsonConvert.SerializeObject(_settings, Formatting.Indented);
+            try
+            {
+                File.WriteAllText(SettingFile, serialized);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "Error", MessageBoxButton.OK);
+            }
         }
 
         private void DeleteSelectedItem<T>(ObservableCollection<T> collection, ref T selectedKey, string selectedKeyName)
