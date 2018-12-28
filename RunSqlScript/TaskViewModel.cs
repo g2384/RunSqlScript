@@ -8,15 +8,13 @@ namespace RunSqlScript
     public sealed class TaskViewModel : BindableBase
     {
         private readonly Job _job;
-        private readonly Dispatcher _dispatcher;
 
         public TaskViewModel(Job job, Dispatcher dispatcher)
         {
-            _dispatcher = dispatcher;
             _job = job;
             CancelCommand = new DelegateCommand(Cancel);
-            _job.StateChanged += Job_StateChanged;
-            IsProgressBarVisible = true;
+            _job.StatusChanged += Job_StatusChanged;
+            dispatcher.Invoke(() => IsProgressBarVisible = true);
         }
 
         private string _status;
@@ -39,7 +37,7 @@ namespace RunSqlScript
 
         private void Cancel()
         {
-            if (_job != null && _job.Status == JobStatus.Running) {
+            if (_job?.Status == JobStatus.Running) {
                 _job.Cancel();
             }
         }
@@ -52,7 +50,7 @@ namespace RunSqlScript
             set => SetProperty(ref _isProgressBarVisible, value);
         }
 
-        private void Job_StateChanged(object sender, EventArgs e)
+        private void Job_StatusChanged(object sender, EventArgs e)
         {
             Description = _job.Description;
             Progress = _job.Progress;

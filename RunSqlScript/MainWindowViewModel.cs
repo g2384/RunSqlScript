@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
@@ -181,7 +182,7 @@ namespace RunSqlScript
             }
         }
 
-        private void DeleteSelectedItem<T>(ObservableCollection<T> collection, ref T selectedKey, string selectedKeyName)
+        private void DeleteSelectedItem<T>(IList<T> collection, ref T selectedKey, string selectedKeyName)
         {
             var index = collection.IndexOf(selectedKey);
             if (index >= 0)

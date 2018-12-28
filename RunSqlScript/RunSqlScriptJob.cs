@@ -23,7 +23,7 @@ namespace RunSqlScript
 
         protected override void ExecuteTasks()
         {
-            RaiseStateChanged("Connecting to sql server");
+            RaiseStatusChanged("Connecting to sql server");
             var sqlConnection = new SqlConnection(_connectionString);
             var server = new Server(new ServerConnection(sqlConnection));
             if (IsCancelled)
@@ -36,11 +36,13 @@ namespace RunSqlScript
                     Cancelled();
                     return;
                 }
-                RaiseStateChanged("Executing " + Path.GetFileName(file));
+                RaiseStatusChanged("Executing " + Path.GetFileName(file));
                 var script = File.ReadAllText(file);
                 server.ConnectionContext.ExecuteNonQuery(script);
             }
-            Completed();
+
+            Status = JobStatus.Completed;
+            RaiseStatusChanged("Completed");
         }
     }
 }

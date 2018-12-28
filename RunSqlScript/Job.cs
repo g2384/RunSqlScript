@@ -8,13 +8,13 @@ namespace RunSqlScript
         {
             try
             {
-                RaiseStateChanged("Initialising", 0);
+                RaiseStatusChanged("Initialising", 0);
                 _totalTasks = GetTotalTasks();
                 ExecuteTasks();
             }
             catch (Exception e)
             {
-                RaiseStateChanged(e.Message, _processedTasks);
+                RaiseStatusChanged(e.Message, _processedTasks);
             }
         }
 
@@ -30,28 +30,22 @@ namespace RunSqlScript
 
         private int _processedTasks;
 
-        public JobStatus Status { get; private set; }
-        
-        protected void Completed()
-        {
-            Status = JobStatus.Completed;
-            RaiseStateChanged("Completed");
-        }
+        public JobStatus Status { get; set; }
 
-        public void RaiseStateChanged(string description)
+        public void RaiseStatusChanged(string description)
         {
             _processedTasks++;
-            RaiseStateChanged(description, _processedTasks);
+            RaiseStatusChanged(description, _processedTasks);
         }
 
-        private void RaiseStateChanged(string description, int processedTasks)
+        private void RaiseStatusChanged(string description, int processedTasks)
         {
             Description = description;
             Progress = processedTasks / _totalTasks * 100;
-            StateChanged?.Invoke(this, null);
+            StatusChanged?.Invoke(this, null);
         }
 
-        public event EventHandler StateChanged;
+        public event EventHandler StatusChanged;
 
         protected bool IsCancelled;
 
@@ -60,14 +54,14 @@ namespace RunSqlScript
             IsCancelled = true;
             Status = JobStatus.Cancelling;
             Description = "Cancelling";
-            StateChanged?.Invoke(this, null);
+            StatusChanged?.Invoke(this, null);
         }
 
         public void Cancelled()
         {
             Description = "Cancelled";
             Status = JobStatus.Cancelled;
-            StateChanged?.Invoke(this, null);
+            StatusChanged?.Invoke(this, null);
         }
     }
 }

@@ -12,8 +12,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
-            <Style TargetType="{x:Type Button}" 
-                       BasedOn="{StaticResource {x:Type Button}}">
+            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
                 <Setter Property="controls:ButtonHelper.PreserveTextCase" Value="True"/>
             </Style>
         </ResourceDictionary>
@@ -49,12 +48,10 @@
             Grid.Row="3"
             BorderThickness="1">
             <Border.Resources>
-                <Color x:Key="BlackColor">#FF000000</Color>
                 <Color x:Key="Gray2">#FF7F7F7F</Color>
                 <Color x:Key="Gray6">#FFCCCCCC</Color>
                 <SolidColorBrush x:Key="TextBoxBorderBrush" Color="{StaticResource Gray6}" />
                 <SolidColorBrush x:Key="TextBoxMouseOverBorderBrush" Color="{StaticResource Gray2}" />
-                <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource BlackColor}" />
             </Border.Resources>
             <Border.Style>
                 <Style TargetType="{x:Type Border}">
