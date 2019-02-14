@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace RunSqlScript
+namespace RunSqlScript.Extensions
 {
     public static class StringExtensions
     {

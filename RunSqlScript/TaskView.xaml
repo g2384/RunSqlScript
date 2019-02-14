@@ -36,10 +36,11 @@
             Command="{Binding CancelCommand}"
             BorderBrush="Transparent"
             Background="Transparent"
-            Margin="5,0,0,0" VerticalAlignment="Center"
+            Margin="5,0,0,0"
+            VerticalAlignment="Center"
             Style="{DynamicResource MetroCircleButtonStyle}"
             Visibility="{Binding IsProgressBarVisible, Converter={StaticResource BooleanToVisibility}}">
-            <Image Source="cancel.png"/>
+            <Image Source="Images/cancel.png"/>
         </Button>
         <TextBlock
             Grid.Column="1"

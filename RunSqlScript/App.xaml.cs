@@ -26,21 +26,6 @@ namespace RunSqlScript
                 LogUnhandledException(e.Exception, "UnobservedTaskException");
         }
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            ThemeManager.AddAccent("Theme", new Uri("pack://application:,,,/RunSqlScript;component/Theme.xaml"));
-
-            // get the current app style (theme and accent) from the application
-            var theme = ThemeManager.DetectAppStyle(Current);
-
-            // now change app style to the custom accent and current theme
-            ThemeManager.ChangeAppStyle(Current,
-                ThemeManager.GetAccent("Theme"),
-                theme.Item1);
-
-            base.OnStartup(e);
-        }
-
         private void LogUnhandledException(Exception exception, string source)
         {
             var message = $"Unhandled exception ({source})";
