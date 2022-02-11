@@ -22,7 +22,7 @@ namespace RunSqlScript
             _connectionString = _settings.ConnectionString;
             _useRelativePath = _settings.UseRelativePath;
             Files = new ObservableCollection<string>(_settings.Files);
-            ScriptsDropHandler = new FileDropHandler(Files, () => UseRelativePath, collection_CollectionChanged);
+            ScriptsDropHandler = new FileDropHandler(Files, () => UseRelativePath, Collection_CollectionChanged);
             DeleteFile = new DelegateCommand(DeleteSelectedFile);
             Run = new DelegateCommand(() => RunAsyncTask(RunCommand), CanExecuteMethod);
             Add = new DelegateCommand(AddFile, () => true);
@@ -52,12 +52,12 @@ namespace RunSqlScript
             }
         }
 
-        private async void RunAsyncTask(Action action)
+        private static async void RunAsyncTask(Action action)
         {
             await Task.Run(action);
         }
 
-        private void collection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Collection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             Run.RaiseCanExecuteChanged();
         }
@@ -193,7 +193,7 @@ namespace RunSqlScript
             {
                 collection.RemoveAt(index);
                 var nextIndex = Math.Min(index, collection.Count - 1);
-                selectedKey = nextIndex >= 0 ? collection[nextIndex] : default(T);
+                selectedKey = nextIndex >= 0 ? collection[nextIndex] : default;
                 RaisePropertyChanged(selectedKeyName);
             }
         }

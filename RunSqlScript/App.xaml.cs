@@ -1,9 +1,8 @@
-using MahApps.Metro;
 using NLog;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace RunSqlScript
 {
@@ -24,9 +23,18 @@ namespace RunSqlScript
 
             TaskScheduler.UnobservedTaskException += (s, e) =>
                 LogUnhandledException(e.Exception, "UnobservedTaskException");
+
+            var argumentProvider = new CommandLineArgumentProvider();
+            var sqlFiles = argumentProvider.GetSqlFiles();
+            var connectionString = argumentProvider.GetConnectionString();
+            if (sqlFiles.Any() && !string.IsNullOrWhiteSpace(connectionString)) {
+                var task = new RunSqlScriptJob(connectionString, sqlFiles);
+                task.Execute();
+                Shutdown(0);
+            }
         }
 
-        private void LogUnhandledException(Exception exception, string source)
+        private static void LogUnhandledException(Exception exception, string source)
         {
             var message = $"Unhandled exception ({source})";
             try
@@ -44,7 +52,7 @@ namespace RunSqlScript
             }
         }
 
-        private void LogError(Exception exception, string message)
+        private static void LogError(Exception exception, string message)
         {
             Logger.Error(exception, message);
         }

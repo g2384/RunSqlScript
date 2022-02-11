@@ -78,11 +78,11 @@ namespace RunSqlScript
                     }
                     break;
                 case DragDropEffects.Link:
-                    break;
                 case DragDropEffects.Scroll:
-                    break;
                 case DragDropEffects.All:
                     break;
+                default:
+                    throw new NotSupportedException();
             }
         }
     }
