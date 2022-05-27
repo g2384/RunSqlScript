@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2046
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSqlScript", "RunSqlScript\RunSqlScript.csproj", "{63582CDE-826B-4BB7-A83C-01CAB7956E24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunSqlScript.Console", "RunSqlScript.Console\RunSqlScript.Console.csproj", "{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,14 @@ Global
 		{63582CDE-826B-4BB7-A83C-01CAB7956E24}.Release|Any CPU.Build.0 = Release|Any CPU
 		{63582CDE-826B-4BB7-A83C-01CAB7956E24}.Release|x64.ActiveCfg = Release|x64
 		{63582CDE-826B-4BB7-A83C-01CAB7956E24}.Release|x64.Build.0 = Release|x64
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{BA225DF2-6E6A-40A7-9B08-6B9179DB34DB}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
